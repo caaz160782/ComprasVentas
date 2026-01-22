@@ -8,4 +8,7 @@ public class Permiso
     public string Nombre { get; set; } = string.Empty;
     public string? Recurso { get; set; }
     public string Accion { get; set; }= string.Empty;
+
+    //Realaciones
+    public ICollection<Rol> Roles { get; set; } = new List<Rol>();
 }
