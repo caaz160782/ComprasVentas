@@ -1,0 +1,11 @@
+se creara un contenedor en docker de una bd en postgresSQl
+
+este se alimentara desde un file SQl
+
+nombre de la bd appdb
+
+ejecutar 
+
+docker compose down -v
+
+docker compose up -d --build

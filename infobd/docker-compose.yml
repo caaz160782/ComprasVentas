@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  postgres:
+    build: .
+    container_name: postgres_app
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: secret123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
