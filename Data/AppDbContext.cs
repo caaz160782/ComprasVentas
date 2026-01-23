@@ -15,9 +15,39 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Rol>(entity =>
+    {
+        entity.ToTable("roles");
+        entity.HasKey(r => r.Id);
+        entity.Property(r => r.Id).HasColumnName("id");
+    });
+
+    modelBuilder.Entity<Permiso>(entity =>
+    {
+        entity.ToTable("permisos");
+        entity.HasKey(p => p.Id);
+        entity.Property(p => p.Id).HasColumnName("id");
+    });
+
         modelBuilder.Entity<Rol>()
-            .HasMany(r=>Permisos)
-            .WithMany(p=>Roles)
-            .UsingEntity(q=> q.ToTable("permiso_rol"));
+        .HasMany(r => r.Permisos)
+        .WithMany(p => p.Roles)
+        .UsingEntity<Dictionary<string, object>>(
+            "permiso_role",
+            j => j
+                .HasOne<Permiso>()
+                .WithMany()
+                .HasForeignKey("permiso_id")
+                .HasConstraintName("fk_permiso_rol_permiso"),
+            j => j
+                .HasOne<Rol>()
+                .WithMany()
+                .HasForeignKey("rol_id")
+                .HasConstraintName("fk_permiso_rol_rol"),
+            j =>
+            {
+                j.ToTable("permiso_role");
+                j.HasKey("permiso_id", "rol_id");
+            });
     }
 }
