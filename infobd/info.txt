@@ -1,11 +1,17 @@
 se creara un contenedor en docker de una bd en postgresSQl
 
-este se alimentara desde un file SQl
-
+*** se puede alimentar desde un file SQl pero preferiblemente mejor ocupar migrations
 nombre de la bd appdb
-
 ejecutar 
+1.docker compose down -v
+2.docker compose up -d --build
 
-docker compose down -v
+migraciones 
 
-docker compose up -d --build
+instalar libreria 
+dotnet tool install --global dotnet-ef
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+
+dotnet ef migrations add initialBD
+dotnet ef database update
