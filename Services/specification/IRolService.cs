@@ -6,6 +6,9 @@ namespace ComprasVentas.Services.specification;
 
 public interface IRolService
 {
-    Task<List<Rol>> GetAllRolesAsync();
-    Task<Rol> CreateRolAsync(CreateRolDto createRolDto);
+    Task<List<RolDto>> GetAllRolesAsync();
+    Task<RolDto?> GetRolDtoAsync(int id);
+    Task<RolDto> CreateRolAsync(CreateRolDto dto);
+    Task UpdateRolAsync(int id, CreateRolDto dto);
+    Task DeleteRolAsync(int id);
 }
