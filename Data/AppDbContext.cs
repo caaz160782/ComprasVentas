@@ -13,6 +13,10 @@ public class AppDbContext : DbContext
     public DbSet<Rol>Roles { get; set; }
     public DbSet<Permiso>Permisos { get; set; }
 
+    public DbSet<Usuario>Usuarios { get; set; }
+
+    public DbSet<Persona>Personas { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Rol>(entity =>
@@ -29,7 +33,7 @@ public class AppDbContext : DbContext
         entity.Property(p => p.Id).HasColumnName("id");
     });
 
-        modelBuilder.Entity<Rol>()
+    modelBuilder.Entity<Rol>()
         .HasMany(r => r.Permisos)
         .WithMany(p => p.Roles)
         .UsingEntity<Dictionary<string, object>>(
@@ -49,5 +53,11 @@ public class AppDbContext : DbContext
                 j.ToTable("permiso_role");
                 j.HasKey("permiso_id", "rol_id");
             });
+
+     
+    modelBuilder.Entity<Usuario>()
+        .HasOne(u => u.Persona)
+        .WithOne(p =>p.Usuario)
+        .HasForeignKey<Persona>(p => p.Id);
     }
 }
