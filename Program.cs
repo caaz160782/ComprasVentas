@@ -16,6 +16,8 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 // Add services to the container.
 builder.Services.AddScoped<IRolService, RolService>();
+builder.Services.AddScoped<IPermisoService, PermisoService>();
+builder.Services.AddScoped<PermisoRepository>();
 builder.Services.AddScoped<RolRepository>();
 
 builder.Services.AddControllers();

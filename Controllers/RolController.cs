@@ -1,33 +1,81 @@
 using ComprasVentas.Dto;
 using ComprasVentas.Services.specification;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ComprasVentas.Controllers
+namespace ComprasVentas.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class RolController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RolController : ControllerBase
+    private readonly IRolService _rolService;
+
+    public RolController(IRolService rolService)
     {
-        private readonly IRolService _rolService;
+        _rolService = rolService;
+    }
 
-        public RolController(IRolService rolService)
-        {
-            _rolService = rolService;
-        }
+    // GET: api/rol
+    [HttpGet]
+    public async Task<ActionResult<List<RolDto>>> GetAllRoles()
+    {
+        var roles = await _rolService.GetAllRolesAsync();
+        return Ok(roles);
+    }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllRoles()
-        {
-            var roles = await _rolService.GetAllRolesAsync();
-            return Ok(roles);       
-        }
+    // GET: api/rol/{id}
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<RolDto>> GetRolById(int id)
+    {
+        var rol = await _rolService.GetRolDtoAsync(id);
 
-        [HttpPost]
-        public async Task<IActionResult> CreateRol([FromBody] CreateRolDto createRolDto)
-        {
-            var rol = await _rolService.CreateRolAsync(createRolDto);
-            return CreatedAtAction(nameof(GetAllRoles), new { id = rol.Id }, rol);      
-        }   
+        if (rol is null)
+            return NotFound(new { message = $"Rol con id {id} no encontrado" });
+
+        return Ok(rol);
+    }
+
+    // POST: api/rol
+    [HttpPost]
+    public async Task<ActionResult<RolDto>> CreateRol([FromBody] CreateRolDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var rol = await _rolService.CreateRolAsync(dto);
+
+        return CreatedAtAction(
+            nameof(GetRolById),
+            new { id = rol.Id },
+            rol
+        );
+    }
+
+    // PUT: api/rol/{id}
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateRol(int id, [FromBody] CreateRolDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var existingRol = await _rolService.GetRolDtoAsync(id);
+        if (existingRol is null)
+            return NotFound(new { message = $"Rol con id {id} no encontrado" });
+
+        await _rolService.UpdateRolAsync(id, dto);
+
+        return NoContent(); // 204
+    }
+
+    // DELETE: api/rol/{id}
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteRol(int id)
+    {
+        var existingRol = await _rolService.GetRolDtoAsync(id);
+        if (existingRol is null)
+            return NotFound(new { message = $"Rol con id {id} no encontrado" });
+
+        await _rolService.DeleteRolAsync(id);
+        return NoContent();
     }
 }

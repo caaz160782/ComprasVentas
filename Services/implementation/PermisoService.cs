@@ -1,5 +1,6 @@
 using System;
 using ComprasVentas.Dto;
+using ComprasVentas.Models;
 using ComprasVentas.Repository;
 using ComprasVentas.Services.specification;
 
@@ -8,18 +9,45 @@ namespace ComprasVentas.Services.implementation;
 public class PermisoService (PermisoRepository permisoRepository): IPermisoService
 {
     private readonly PermisoRepository _permisoRepository=permisoRepository;
-    public Task<List<PermisoDto>> GetAllPermisosAsync()
+    public async Task<List<PermisoDto>> GetAllPermisosAsync()
     {
-        throw new NotImplementedException();
+      var permisos = await _permisoRepository.GetAllPermisosAsync();
+      return permisos.Select(p => new PermisoDto
+      {
+          Id = p.Id,
+         Nombre  = p.Nombre,
+         Recurso = p.Recurso,
+         Accion  = p.Accion
+      }).ToList();
     }
 
-    public Task<PermisoDto?> GetPermisoByIdAsync(int Id)
+    public async Task<PermisoDto?> GetPermisoByIdAsync(int Id)
     {
-        throw new NotImplementedException();
+      var permiso = await _permisoRepository.GetPermisoByIdAsync(Id);
+      if(permiso == null) return null;
+      return new PermisoDto
+        {  Id = permiso.Id,
+            Nombre  = permiso.Nombre,
+            Recurso = permiso.Recurso,
+            Accion  = permiso.Accion
+        };
     }
-    public Task<PermisoDto> CreatePermisoAsync(CreatePermisoDto dto)
+    public async Task<PermisoDto> CreatePermisoAsync(CreatePermisoDto dto)
     {
-        throw new NotImplementedException();
+        var  permiso= new Permiso
+        {   
+            Nombre  = dto.Nombre,
+            Recurso = dto.Recurso,
+            Accion  = dto.Accion
+        };
+        await _permisoRepository.CreatePermisoAsync(permiso);
+
+         return new PermisoDto
+        {  Id = permiso.Id,
+            Nombre  = permiso.Nombre,
+            Recurso = permiso.Recurso,
+            Accion  = permiso.Accion
+        };
     }
 
 
