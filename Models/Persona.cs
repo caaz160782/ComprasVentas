@@ -11,7 +11,7 @@ public class Persona
 
     public string Apellidos {get ; set;}= string.Empty;
 
-    public DateTime FechaNACIMIENTO {get; set;} 
+    public DateTime FechaNacimiento {get; set;} 
 
     public string? Genero {get ; set;}
 
