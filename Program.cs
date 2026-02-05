@@ -1,4 +1,5 @@
 using ComprasVentas.Data;
+using ComprasVentas.Models;
 using ComprasVentas.Repository;
 using ComprasVentas.Services.implementation;
 using ComprasVentas.Services.specification;
@@ -15,10 +16,13 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 
 // Add services to the container.
-builder.Services.AddScoped<IRolService, RolService>();
-builder.Services.AddScoped<IPermisoService, PermisoService>();
 builder.Services.AddScoped<PermisoRepository>();
+builder.Services.AddScoped<IPermisoService, PermisoService>();
 builder.Services.AddScoped<RolRepository>();
+builder.Services.AddScoped<IRolService, RolService>();
+builder.Services.AddScoped<UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

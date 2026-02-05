@@ -51,4 +51,6 @@ public class CreateUsuarioDto
     [Required(ErrorMessage = "La nacionalidad es obligatoria")]
     [StringLength(50, ErrorMessage = "La nacionalidad no puede superar los 50 caracteres")]
     public string? Nacionalidad { get; set; }
+    
+    public List<int> RolesIds {get; set;}=[];
 }

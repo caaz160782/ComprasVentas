@@ -14,4 +14,6 @@ public class Usuario
 
     public Persona? Persona {get; set;}
 
+    public ICollection<Rol> Roles {get ; set;} = [];
+
 }

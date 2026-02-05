@@ -19,45 +19,53 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Rol>(entity =>
-    {
-        entity.ToTable("roles");
-        entity.HasKey(r => r.Id);
-        entity.Property(r => r.Id).HasColumnName("id");
-    });
+    
+        modelBuilder.Entity<Rol>()
+        .HasMany(r=> r.Permisos)
+        .WithMany(p=>p.Roles)
+        .UsingEntity(q=> q.ToTable("permiso_role"));
 
-    modelBuilder.Entity<Permiso>(entity =>
-    {
-        entity.ToTable("permisos");
-        entity.HasKey(p => p.Id);
-        entity.Property(p => p.Id).HasColumnName("id");
-    });
+        modelBuilder.Entity<Usuario>()
+        .HasMany(r=> r.Roles)
+        .WithMany(p=>p.Usuarios)
+        .UsingEntity(q=> q.ToTable("usuario_role"));
+        
+        modelBuilder.Entity<Usuario>()
+            .HasOne(u => u.Persona)
+            .WithOne(p =>p.Usuario)
+            .HasForeignKey<Persona>(p => p.Id);
 
-    modelBuilder.Entity<Rol>()
-        .HasMany(r => r.Permisos)
-        .WithMany(p => p.Roles)
-        .UsingEntity<Dictionary<string, object>>(
-            "permiso_role",
-            j => j
-                .HasOne<Permiso>()
-                .WithMany()
-                .HasForeignKey("permiso_id")
-                .HasConstraintName("fk_permiso_rol_permiso"),
-            j => j
-                .HasOne<Rol>()
-                .WithMany()
-                .HasForeignKey("rol_id")
-                .HasConstraintName("fk_permiso_rol_rol"),
-            j =>
-            {
-                j.ToTable("permiso_role");
-                j.HasKey("permiso_id", "rol_id");
+        modelBuilder.Entity<Usuario>(e =>
+        {
+                e.Property(u => u.Nombre).IsRequired().HasMaxLength(100);
+                e.Property(u => u.Correo).IsRequired().HasMaxLength(255);
+                e.Property(u => u.Password).IsRequired().HasMaxLength(255);
             });
 
-     
-    modelBuilder.Entity<Usuario>()
-        .HasOne(u => u.Persona)
-        .WithOne(p =>p.Usuario)
-        .HasForeignKey<Persona>(p => p.Id);
+    modelBuilder.Entity<Persona>(e =>
+        {
+                e.Property(p => p.Nombres).IsRequired().HasMaxLength(100);
+                e.Property(p => p.Apellidos).IsRequired().HasMaxLength(100);
+                e.Property(p => p.Genero).IsRequired().HasMaxLength(20);
+                e.Property(p => p.Telefono).IsRequired().HasMaxLength(20);
+                e.Property(p => p.Direccion).IsRequired().HasMaxLength(255);
+                e.Property(p => p.Nacionalidad).IsRequired().HasMaxLength(50);
+                
+            });
+
+        modelBuilder.Entity<Permiso>(e =>
+        {
+                e.Property(u => u.Nombre).IsRequired().HasMaxLength(100);
+                e.Property(u => u.Accion).IsRequired().HasMaxLength(100);
+                e.Property(u => u.Recurso).IsRequired().HasMaxLength(100);
+            });
+
+        modelBuilder.Entity<Rol>(e =>
+        {
+                e.Property(r => r.Nombre).IsRequired().HasMaxLength(100);
+                e.Property(r => r.Descripcion).IsRequired().HasMaxLength(255);           
+            });
+
+        
     }
 }
