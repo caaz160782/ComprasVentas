@@ -130,16 +130,18 @@ public class UsuarioService(UsuarioRepository usuarioRepository, RolRepository r
                 usuario.Persona.Direccion = updateUsuarioDto.Direccion;
                 usuario.Persona.Nacionalidad = updateUsuarioDto.Nacionalidad;
 
-                usuario.Roles.Clear();
-                foreach(var rolId in updateUsuarioDto.RolesIds )
-                    {
-                        var rol = await _rolRepository.GetRolByIdAsync(rolId);
-                        if(rol != null)
+                if(updateUsuarioDto.RolesIds != null && updateUsuarioDto.RolesIds.Count >0)
+                {
+                    usuario.Roles.Clear();
+                    foreach(var rolId in updateUsuarioDto.RolesIds )
                         {
-                            usuario.Roles.Add(rol);
-                        }   
-                    }
-
+                            var rol = await _rolRepository.GetRolByIdAsync(rolId);
+                            if(rol != null)
+                            {
+                                usuario.Roles.Add(rol);
+                            }   
+                        }
+                }
                 await _usuarioRepository.UpdateUsuarioAsync(usuario);
             }
             catch (Exception ex)
