@@ -15,3 +15,5 @@ dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 
 dotnet ef migrations add initialBD
 dotnet ef database update
+
+dotnet ef migrations add UsuariosPersona 
