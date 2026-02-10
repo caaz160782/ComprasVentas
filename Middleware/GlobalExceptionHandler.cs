@@ -13,7 +13,7 @@ public class GlobalExceptionHandler : IExceptionHandler
     {
             _logger=  logger;
     }
-    public ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
       _logger.LogError(exception, "Error en proceso logged");
 
@@ -45,4 +45,5 @@ public class GlobalExceptionHandler : IExceptionHandler
         await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
 
         return true;
+    }
 }

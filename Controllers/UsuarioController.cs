@@ -1,4 +1,5 @@
 using ComprasVentas.Dto;
+using ComprasVentas.Exceptions;
 using ComprasVentas.Services.specification;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,12 +24,9 @@ namespace ComprasVentas.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UsuarioDto>> GetById(int id)
         {
-            var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-            return Ok(usuario);
+           
+           var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
+           return Ok(usuario);            
         }
         [HttpPost]
         public async Task<ActionResult<UsuarioDto>> Create(CreateUsuarioDto usuarioCreateDto)

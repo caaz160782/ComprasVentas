@@ -1,8 +1,12 @@
+using System.IO.Compression;
+using ComprasVentas.Common;
 using ComprasVentas.Data;
+using ComprasVentas.Middleware;
 using ComprasVentas.Models;
 using ComprasVentas.Repository;
 using ComprasVentas.Services.implementation;
 using ComprasVentas.Services.specification;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,10 +27,31 @@ builder.Services.AddScoped<IRolService, RolService>();
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
-
-builder.Services.AddControllers();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+        
+        var response = new ErrorResponse
+        {
+            StatusCode =StatusCodes.Status400BadRequest,
+            Message="Errores en validacion",
+            Path= context.HttpContext.Request.Path,
+            Errors= errors
+        };
+        return new BadRequestObjectResult(response);
+    };
+});
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -34,6 +59,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
