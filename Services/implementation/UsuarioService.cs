@@ -48,21 +48,12 @@ public class UsuarioService(UsuarioRepository usuarioRepository, RolRepository r
 
     public async Task<UsuarioDto?> GetUsuarioByIdAsync(int id)
     {
-        try
-        {
-            var usuario = await _usuarioRepository.GetUsuarioByIdAsync(id);
+        var usuario = await _usuarioRepository.GetUsuarioByIdAsync(id);
 
-            if (usuario == null)
-            {
-                throw new NotFoundException($"Usuario con ID {id} no encontrado");
-            }
+        if (usuario == null)
+            throw new NotFoundException($"Usuario con ID {id} no encontrado");
 
-            return MapToDto(usuario);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error al obtener el usuario con ID {id}", ex);
-        }
+        return MapToDto(usuario);
     }
 
     public async Task<UsuarioDto> CreateUsuarioAsync(CreateUsuarioDto createUsuarioDto)

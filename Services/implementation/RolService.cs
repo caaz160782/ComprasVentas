@@ -1,6 +1,7 @@
 using System;
 using ComprasVentas.Builder;
 using ComprasVentas.Dto;
+using ComprasVentas.Exceptions;
 using ComprasVentas.Models;
 using ComprasVentas.Repository;
 using ComprasVentas.Services.specification;
@@ -27,7 +28,8 @@ public class RolService(RolRepository rolRepository, PermisoRepository permisoRe
     public async Task<RolDto?> GetRolDtoAsync(int id)
     {
         var rol = await _rolRepository.GetRolByIdAsync(id);
-        if(rol == null) return null;
+        if(rol == null)  throw new NotFoundException($"Rol con ID {id} no encontrado");
+
         return new RolDto
         {
             Id= rol.Id,

@@ -15,16 +15,17 @@ public class GlobalExceptionHandler : IExceptionHandler
     }
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-      _logger.LogError(exception, "Error en proceso logged");
+         _logger.LogError(exception, "Error exception");
 
         var response = new ErrorResponse
         {
             Timestamp = DateTime.UtcNow,
             Path = httpContext.Request.Path,
         };
-
+        
         switch (exception)
         {
+            
             case NotFoundException notfoundEx:
                 response.StatusCode = StatusCodes.Status404NotFound;
                 response.Message = notfoundEx.Message;
