@@ -17,6 +17,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Persona>Personas { get; set; }
 
+    public DbSet<RefreshToken> RefreshTokens {get; set;}
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
     
@@ -65,6 +67,14 @@ public class AppDbContext : DbContext
                 e.Property(r => r.Nombre).IsRequired().HasMaxLength(100);
                 e.Property(r => r.Descripcion).IsRequired().HasMaxLength(255);           
             });
+
+        modelBuilder.Entity<RefreshToken>(e=>
+        {
+            e.Property(r=>r.Token).IsRequired().HasMaxLength(500);
+            e.HasOne(r=>r.Usuario)
+             .WithMany(u => u.RefreshTokens)
+             .HasForeignKey(r=> r.UsuarioId);
+        });
 
         
     }

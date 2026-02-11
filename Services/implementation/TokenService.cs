@@ -2,6 +2,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using ComprasVentas.Common;
 using ComprasVentas.Models;
 using ComprasVentas.Services.specification;
@@ -65,10 +66,42 @@ public class TokenService : ITokenService
        return Convert.ToBase64String(randomNumber);
     }
 
-
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
     {
-        throw new NotImplementedException();
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
+
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,            
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidIssuer = _jwtSettings.Issuer,
+            ValidAudience = _jwtSettings.Audience,            
+            ValidateLifetime = false             // 🔥 CLAVE: permitir token expirado
+        };
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(
+                token,
+                tokenValidationParameters,
+                out SecurityToken securityToken
+            );
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Token inválido");
+            }
+
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public DateTime GetTokenExpiration()
