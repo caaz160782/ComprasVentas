@@ -60,8 +60,43 @@ public class AuthService : IAuthService
         };
     }
 
-    public Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenDto refreshTokenDto)
+    public async Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenDto refreshTokenDto)
     {
-        throw new NotImplementedException();
+        //search refreshToken
+        var refreshTokenEntity = await _appDbContext.RefreshTokens
+            .Include(r => r.Usuario)
+            .ThenInclude(u=>u.Roles)
+            .ThenInclude(p=>p.Permisos)
+            .SingleOrDefaultAsync(r=>r.Token == refreshTokenDto.RefreshToken);
+
+        if(refreshTokenEntity == null || refreshTokenEntity.IsRevoked)
+        {
+            throw new BadRequestException("Refresh Token invalido");
+        }
+        //crear tokens
+        var accessToken = _tokenService.GenerateToken(refreshTokenEntity.Usuario);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+
+        refreshTokenEntity.Revoked = DateTime.UtcNow;
+        refreshTokenEntity.IsRevoked = true;
+        _appDbContext.RefreshTokens.Update(refreshTokenEntity);
+
+        var newRefreshTokenEntity = new RefreshToken
+        {
+          Token = refreshToken,
+          Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays),
+          UsuarioId = refreshTokenEntity.Id,
+          Created = DateTime.UtcNow  
+        };
+        _appDbContext.RefreshTokens.Add(refreshTokenEntity);
+        await _appDbContext.SaveChangesAsync(); 
+
+        return new AuthResponseDto
+        {
+            Token = accessToken,
+            RefreshToken = refreshToken,
+            Expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.TokenExpirationInMinutes),
+            identifier = refreshTokenEntity.Id
+        };
     }
 }
