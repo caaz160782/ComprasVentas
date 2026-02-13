@@ -75,7 +75,7 @@ public class UsuarioService(UsuarioRepository usuarioRepository, RolRepository r
             {
                 Nombre = createUsuarioDto.Nombre,
                 Correo = createUsuarioDto.Correo,
-                Password = createUsuarioDto.Password,
+                Password =  BCrypt.Net.BCrypt.HashPassword(createUsuarioDto.Password),
                 Persona = new Persona
                 {
                     Nombres = createUsuarioDto.Nombres,
@@ -109,7 +109,7 @@ public class UsuarioService(UsuarioRepository usuarioRepository, RolRepository r
 
                 usuario.Nombre = updateUsuarioDto.Nombre;
                 usuario.Correo = updateUsuarioDto.Correo;
-                usuario.Password = updateUsuarioDto.Password;
+                usuario.Password =  BCrypt.Net.BCrypt.HashPassword(updateUsuarioDto.Password);
 
                 if (usuario.Persona == null)
                     throw new InvalidOperationException("El usuario no tiene Persona asociada.");

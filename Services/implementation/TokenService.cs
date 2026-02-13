@@ -6,6 +6,7 @@ using System.Text;
 using ComprasVentas.Common;
 using ComprasVentas.Models;
 using ComprasVentas.Services.specification;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ComprasVentas.Services.implementation;
@@ -14,9 +15,9 @@ public class TokenService : ITokenService
 {
     private readonly JwtSettings _jwtSettings;
 
-    public TokenService(JwtSettings jwtSettings)
+    public TokenService(IOptions<JwtSettings> jwtSettings)
     {
-        _jwtSettings = jwtSettings;
+        _jwtSettings = jwtSettings.Value;
     }
     
     public string GenerateToken(Usuario usuario)

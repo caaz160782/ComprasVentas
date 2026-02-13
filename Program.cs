@@ -64,6 +64,12 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var context  = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        context.Database.Migrate();
+    }
 }
 
 app.UseExceptionHandler();

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ComprasVentas.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260205232632_UsuariosPersona")]
-    partial class UsuariosPersona
+    [Migration("20260213060449_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,36 @@ namespace ComprasVentas.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Permisos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Accion = "CREATE",
+                            Nombre = "ROL_CREATE",
+                            Recurso = "ROL"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Accion = "READ",
+                            Nombre = "ROL_READ",
+                            Recurso = "ROL"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Accion = "UPDATE",
+                            Nombre = "ROL_UPDATE",
+                            Recurso = "ROL"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Accion = "DELETE",
+                            Nombre = "ROL_DELETE",
+                            Recurso = "ROL"
+                        });
                 });
 
             modelBuilder.Entity("ComprasVentas.Models.Persona", b =>
@@ -69,7 +99,7 @@ namespace ComprasVentas.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<DateTime>("FechaNacimiento")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("date");
 
                     b.Property<string>("Genero")
                         .IsRequired()
@@ -94,6 +124,54 @@ namespace ComprasVentas.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Personas");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Apellidos = "Pérez",
+                            Direccion = "Calle Principal 123",
+                            FechaNacimiento = new DateTime(2026, 2, 12, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Genero = "Masculino",
+                            Nacionalidad = "Mexicana",
+                            Nombres = "Juan",
+                            Telefono = "+1234567890"
+                        });
+                });
+
+            modelBuilder.Entity("ComprasVentas.Models.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Revoked")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("ComprasVentas.Models.Rol", b =>
@@ -117,6 +195,20 @@ namespace ComprasVentas.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Descripcion = "Acceso completo",
+                            Nombre = "Super Administrador"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Descripcion = "Gestión del sistema",
+                            Nombre = "Administrador"
+                        });
                 });
 
             modelBuilder.Entity("ComprasVentas.Models.Usuario", b =>
@@ -145,36 +237,74 @@ namespace ComprasVentas.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Correo = "superadmin@comprasventas.com",
+                            Nombre = "superadmin",
+                            Password = "$2a$11$wX0W9Dk3KQ7vQ9y0JH1Y8uRzZ0xJzjW6kX3KZlM1WvP7QpVn5L6rS"
+                        });
                 });
 
-            modelBuilder.Entity("PermisoRol", b =>
+            modelBuilder.Entity("permiso_rol", b =>
                 {
-                    b.Property<int>("PermisosId")
+                    b.Property<int>("PermisoId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("RolesId")
+                    b.Property<int>("RolId")
                         .HasColumnType("integer");
 
-                    b.HasKey("PermisosId", "RolesId");
+                    b.HasKey("PermisoId", "RolId");
 
-                    b.HasIndex("RolesId");
+                    b.HasIndex("RolId");
 
-                    b.ToTable("permiso_role", (string)null);
+                    b.ToTable("permiso_rol", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PermisoId = 1,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            PermisoId = 2,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            PermisoId = 3,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            PermisoId = 4,
+                            RolId = 1
+                        });
                 });
 
-            modelBuilder.Entity("RolUsuario", b =>
+            modelBuilder.Entity("usuario_rol", b =>
                 {
-                    b.Property<int>("RolesId")
+                    b.Property<int>("UsuarioId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UsuariosId")
+                    b.Property<int>("RolId")
                         .HasColumnType("integer");
 
-                    b.HasKey("RolesId", "UsuariosId");
+                    b.HasKey("UsuarioId", "RolId");
 
-                    b.HasIndex("UsuariosId");
+                    b.HasIndex("RolId");
 
-                    b.ToTable("usuario_role", (string)null);
+                    b.ToTable("usuario_rol", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UsuarioId = 1,
+                            RolId = 1
+                        });
                 });
 
             modelBuilder.Entity("ComprasVentas.Models.Persona", b =>
@@ -188,32 +318,43 @@ namespace ComprasVentas.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("PermisoRol", b =>
+            modelBuilder.Entity("ComprasVentas.Models.RefreshToken", b =>
+                {
+                    b.HasOne("ComprasVentas.Models.Usuario", "Usuario")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("permiso_rol", b =>
                 {
                     b.HasOne("ComprasVentas.Models.Permiso", null)
                         .WithMany()
-                        .HasForeignKey("PermisosId")
+                        .HasForeignKey("PermisoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ComprasVentas.Models.Rol", null)
                         .WithMany()
-                        .HasForeignKey("RolesId")
+                        .HasForeignKey("RolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RolUsuario", b =>
+            modelBuilder.Entity("usuario_rol", b =>
                 {
                     b.HasOne("ComprasVentas.Models.Rol", null)
                         .WithMany()
-                        .HasForeignKey("RolesId")
+                        .HasForeignKey("RolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ComprasVentas.Models.Usuario", null)
                         .WithMany()
-                        .HasForeignKey("UsuariosId")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -221,6 +362,8 @@ namespace ComprasVentas.Migrations
             modelBuilder.Entity("ComprasVentas.Models.Usuario", b =>
                 {
                     b.Navigation("Persona");
+
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }
