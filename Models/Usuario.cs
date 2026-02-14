@@ -18,4 +18,6 @@ public class Usuario
 
     public ICollection<RefreshToken> RefreshTokens {get; set;}=[];
 
+    public ICollection<SucursalUser> SucursalUsers { get; set; } = [];
+
 }
