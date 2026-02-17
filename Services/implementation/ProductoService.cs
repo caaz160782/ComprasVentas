@@ -13,14 +13,12 @@ public class ProductoService : IProductoService
 
     private readonly AppDbContext _context;
 
-    //private readonly IFileService _fileService;
+    private readonly IFileService _fileService;
 
-    public ProductoService(AppDbContext context 
-                           //,IFileService fileService
-                           )
+    public ProductoService(AppDbContext context, IFileService fileService)
     {
         _context = context;
-        //_fileService = fileService;
+        _fileService = fileService;
     }
     
     public async Task<PageResultDto<ProductoDto>> GetProductosAsync(ProductoFilterDto productoFilterDto)
@@ -103,11 +101,11 @@ public class ProductoService : IProductoService
         };
 
         //add File to producto
-        // if(createProductoDto.Imagen != null)
-        // {
-        //     var imagePath = await _fileService.SaveFileAsync(createProductoDto.Imagen);
-        //     producto.Imagen = imagePath;
-        // } 
+        if(createProductoDto.Imagen != null)
+        {
+            var imagePath = await _fileService.SaveFileAsync(createProductoDto.Imagen);
+            producto.Imagen = imagePath;
+        } 
 
         if(string.IsNullOrEmpty(producto.Imagen))
         {
